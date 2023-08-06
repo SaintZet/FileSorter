@@ -1,0 +1,132 @@
+﻿<Window x:Class="FileSorter.Views.MainWindowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:FileSorter.Converters"
+        mc:Ignorable="d"
+        Title="File Sorter"
+        Height="650" Width="380"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <converters:StringArrayConverter x:Key="StringArrayConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- GroupBox for selecting the source folder -->
+        <GroupBox Grid.Row="0" Header="Select folder for sort:" Margin="10">
+            <StackPanel Orientation="Horizontal">
+                <Border BorderThickness="0.5" BorderBrush="LightGray">
+                    <TextBlock Text="{Binding SourcePath}" Padding="5,0" VerticalAlignment="Center" Width="300" />
+                </Border>
+                <Button Width="30" Content="..." FontSize="20" Command="{Binding OpenFolderDialogWindowCommand}" CommandParameter="SourcePath" />
+            </StackPanel>
+        </GroupBox>
+
+        <!-- GroupBox for selecting the destination folder -->
+        <GroupBox Grid.Row="1" Header="Select destination folder:" Margin="10">
+            <StackPanel Orientation="Horizontal">
+                <Border BorderThickness="0.5" BorderBrush="LightGray">
+                    <TextBlock Text="{Binding DestinationPath}" Padding="5,0" VerticalAlignment="Center" Width="300" />
+                </Border>
+                <Button Width="30" Content="..." FontSize="20" Command="{Binding OpenFolderDialogWindowCommand}" CommandParameter="DestinationPath" />
+            </StackPanel>
+        </GroupBox>
+
+        <!-- GroupBox for settings -->
+        <GroupBox Grid.Row="2" Header="Settings:" Margin="10">
+            <StackPanel Orientation="Vertical" Margin="10">
+
+                <!-- Grid for displaying extensions and destination folder names -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="20,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Extensions" />
+                        <TextBlock Grid.Column="1" Text="Destination folder name" />
+                    </Grid>
+
+                    <ItemsControl Grid.Row="1" Margin="20,0,0,0" HorizontalAlignment="Left" ItemsSource="{Binding Rules}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Margin="5" Grid.Column="0" VerticalAlignment="Center" Text="{Binding Extensions, Converter={StaticResource StringArrayConverter}}" />
+                                    <TextBox Margin="5" Grid.Column="1" Height="30" VerticalContentAlignment="Center" Padding="5" Text="{Binding Destination}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+
+                <!-- StackPanel for conflict resolution -->
+                <StackPanel Orientation="Horizontal" Margin="5,20,5,5">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" Content="Conflict file" />
+
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding FileConflictResolutions}" SelectedItem="{Binding SelectedConflictResolution, Mode=TwoWay}" Width="150" HorizontalAlignment="Left" />
+                    </Grid>
+                </StackPanel>
+
+                <!-- StackPanel for move mode -->
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" Content="Move mode" />
+
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding FileMoveModes}" SelectedItem="{Binding SelectedMoveMode, Mode=TwoWay}" Width="150" HorizontalAlignment="Left" />
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- StackPanel for progress bar and buttons -->
+        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" Margin="10,10,0,0">
+            <!-- Grid for progress bar -->
+            <Grid Width="230" Height="20" Margin="0,0,10,0">
+                <ProgressBar Value="{Binding ProgressPercentage}" Visibility="{Binding ProgressBarVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding ProgressStatus}" />
+            </Grid>
+
+            <!-- Grid for start and cancel buttons -->
+            <Grid Grid.Row="3" Grid.Column="0">
+                <Button Height="30" Width="100" Content="Start" Command="{Binding StartSortFilesCommand}" Visibility="{Binding StartButtonVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.Row="0" />
+                <Button Height="30" Width="100" Content="Cancel" Command="{Binding CancelSortFilesCommand}" Visibility="{Binding CancelButtonVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.Row="1" />
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Window>
